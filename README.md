@@ -45,9 +45,7 @@
 - [Authentication](#-authentication)
 - [API Documentation](#-api-documentation)
 - [Testing](#-testing)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
+<!-- - [Deployment](#-deployment) -->
 
 ## 🌟 Overview
 
@@ -245,7 +243,7 @@ JWT_SECRET=your_jwt_secret
 API documentation is available via Swagger UI when running in development mode:
 
 ```
-http://localhost:3000/api/docs
+http://localhost:5000/docs
 ```
 
 ## 🧪 Testing
@@ -261,7 +259,7 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
-## 🚀 Deployment
+<!-- ## 🚀 Deployment
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -281,21 +279,7 @@ $ pnpm run test:cov
 4. Start services:
    ```bash
    docker-compose -f docker-compose.prod.yml up -d
-   ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
+   ``` -->
 
 <p align="center">
   Made with ❤️ by the Connekt Team
