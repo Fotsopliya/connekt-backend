@@ -37,6 +37,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "firebase": "^12.6.0",
     "pg": "^8.16.3",
     "prom-client": "^15.1.3",
