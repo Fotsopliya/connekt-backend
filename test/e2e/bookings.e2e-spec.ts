@@ -2,6 +2,7 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { createTestingApp } from '../utils/create-testing-app';
 import { makeSvixHeaders } from '../utils/svix-helpers';
+import { Server } from 'http';
 
 const ADMIN_EXTL = process.env.DEFAULT_ADMIN_EXTL_ID as string;
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET as string;
@@ -24,11 +25,15 @@ describe('Bookings e2e', () => {
     for (const extlId of [driverExtl, passengerExtl]) {
       const evt = {
         type: 'user.created',
-        data: { id: extlId, email_addresses: [{ email_address: `${extlId}@example.com` }], image_url: null },
+        data: {
+          id: extlId,
+          email_addresses: [{ email_address: `${extlId}@example.com` }],
+          image_url: null,
+        },
       };
       const payload = JSON.stringify(evt);
       const headers = makeSvixHeaders(WEBHOOK_SECRET, payload);
-      await request(app.getHttpServer())
+      await request(app.getHttpServer() as Server)
         .post('/auth/webhooks/clerk')
         .set(headers)
         .send(payload)
@@ -36,32 +41,38 @@ describe('Bookings e2e', () => {
     }
 
     // 2) Driver creates a vehicle
-    const vehResp = await request(app.getHttpServer())
+    const vehResp = await request(app.getHttpServer() as Server)
       .post('/vehicles')
       .set('x-extl-id', driverExtl)
-      .send({ brand: 'Tesla', model: 'Model 3', year: 2022, color: 'black', plateNumber: 'TEST-001' })
+      .send({
+        brand: 'Tesla',
+        model: 'Model 3',
+        year: 2022,
+        color: 'black',
+        plateNumber: 'TEST-001',
+      })
       .expect(201);
-    const vehicleId = vehResp.body.id as string;
+    const vehicleId = (vehResp.body as { id: string }).id;
 
     // 3) Driver requests KYC for user and vehicle, admin approves both
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .post('/users/kyc')
       .set('x-extl-id', driverExtl)
       .send({ notes: 'verify me' })
       .expect(201);
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .post(`/vehicles/${vehicleId}/kyc`)
       .set('x-extl-id', driverExtl)
       .expect(201);
 
-    const listReqs = await request(app.getHttpServer())
+    const listReqs = await request(app.getHttpServer() as Server)
       .get('/admin/verification/requests')
       .set('x-extl-id', ADMIN_EXTL)
       .expect(200);
 
     // Approve all pending requests for simplicity in this flow
     for (const r of listReqs.body as Array<{ id: string }>) {
-      await request(app.getHttpServer())
+      await request(app.getHttpServer() as Server)
         .patch(`/admin/verification/${r.id}/approve`)
         .set('x-extl-id', ADMIN_EXTL)
         .send({ notes: 'ok' })
@@ -69,7 +80,7 @@ describe('Bookings e2e', () => {
     }
 
     // 4) Driver creates a trip (now verified)
-    const tripResp = await request(app.getHttpServer())
+    const tripResp = await request(app.getHttpServer() as Server)
       .post('/trips')
       .set('x-extl-id', driverExtl)
       .send({
@@ -83,31 +94,31 @@ describe('Bookings e2e', () => {
         description: 'Test trip',
       })
       .expect(201);
-    const tripId = tripResp.body.id as string;
+    const tripId = (tripResp.body as { id: string }).id;
 
     // 5) Passenger creates a booking
-    const bookingResp = await request(app.getHttpServer())
+    const bookingResp = await request(app.getHttpServer() as Server)
       .post('/bookings')
       .set('x-extl-id', passengerExtl)
       .send({ tripId, seats: 1 })
       .expect(201);
-    const bookingId = bookingResp.body.id as string;
+    const bookingId = (bookingResp.body as { id: string }).id;
 
     // 6) Driver accepts the booking -> seatsLeft should decrement
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .patch(`/driver/bookings/${bookingId}/accept`)
       .set('x-extl-id', driverExtl)
       .expect(200);
 
     // 7) Driver sets status to completed
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .patch(`/driver/bookings/${bookingId}/status`)
       .set('x-extl-id', driverExtl)
       .send({ status: 'completed' })
       .expect(200);
 
     // 8) Passenger cancels (should be allowed or no-op based on business rules)
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .delete(`/bookings/${bookingId}`)
       .set('x-extl-id', passengerExtl)
       .expect(200);

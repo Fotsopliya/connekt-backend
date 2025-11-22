@@ -17,9 +17,9 @@ export class ClerkWebhookController {
     let rawBody: string;
     const body: unknown = req.body as unknown;
     if (Buffer.isBuffer(body)) {
-      rawBody = (body as Buffer).toString('utf8');
+      rawBody = body.toString('utf8');
     } else if (typeof body === 'string') {
-      rawBody = body as string;
+      rawBody = body;
     } else if (body && typeof body === 'object') {
       rawBody = JSON.stringify(body);
     } else {

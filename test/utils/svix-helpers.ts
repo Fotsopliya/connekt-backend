@@ -6,7 +6,9 @@ export function makeSvixHeaders(secret: string, payloadString: string) {
   }
   if (!secret) throw new Error('CLERK_WEBHOOK_SECRET not set');
   const wh = new Webhook(secret);
-  const signer = wh as unknown as { sign: (body: string) => Record<string, string> };
+  const signer = wh as unknown as {
+    sign: (body: string) => Record<string, string>;
+  };
   const headers = signer.sign(payloadString);
   return headers;
 }

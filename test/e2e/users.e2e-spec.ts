@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { createTestingApp } from '../utils/create-testing-app';
+import { Server } from 'http';
 
 describe('Users e2e', () => {
   let app: INestApplication;
@@ -26,7 +27,7 @@ describe('Users e2e', () => {
       },
     };
 
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .post('/auth/webhooks/clerk')
       .set('Content-Type', 'application/json')
       .send(JSON.stringify(webhookEvent))
@@ -35,7 +36,7 @@ describe('Users e2e', () => {
         expect(body).toHaveProperty('ok', true);
       });
 
-    await request(app.getHttpServer())
+    await request(app.getHttpServer() as Server)
       .get('/users/me')
       .set('x-extl-id', extlId)
       .expect(200)

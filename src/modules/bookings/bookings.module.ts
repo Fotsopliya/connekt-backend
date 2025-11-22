@@ -10,7 +10,11 @@ import { UsersModule } from '../users/users.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Booking, Trip, User]), UsersModule, NotificationsModule],
+  imports: [
+    TypeOrmModule.forFeature([Booking, Trip, User]),
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [BookingsUserController, BookingsDriverController],
   providers: [BookingsService],
   exports: [TypeOrmModule, BookingsService],

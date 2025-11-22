@@ -2,6 +2,7 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { createTestingApp } from '../utils/create-testing-app';
 import { makeSvixHeaders } from '../utils/svix-helpers';
+import { Server } from 'http';
 
 const ADMIN_EXTL = process.env.DEFAULT_ADMIN_EXTL_ID as string;
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET as string;
@@ -31,25 +32,25 @@ describe('Verification admin e2e', () => {
     const payload = JSON.stringify(webhookEvent);
     const headers = makeSvixHeaders(WEBHOOK_SECRET, payload);
 
-    await request(app.getHttpServer() as any)
+    await request(app.getHttpServer() as Server)
       .post('/auth/webhooks/clerk')
       .set(headers)
       .send(payload)
       .expect(200);
 
-    await request(app.getHttpServer() as any)
+    await request(app.getHttpServer() as Server)
       .post('/users/kyc')
       .set('x-extl-id', extlId)
       .send({ notes: 'please verify me' })
       .expect(201);
 
-    const listResp = await request(app.getHttpServer() as any)
+    const listResp = await request(app.getHttpServer() as Server)
       .get('/admin/verification/requests')
       .set('x-extl-id', ADMIN_EXTL)
       .expect(200);
 
-    const reqId = listResp.body[0]?.id as string;
-    await request(app.getHttpServer() as any)
+    const reqId = (listResp.body as Array<{ id: string }>)[0]?.id;
+    await request(app.getHttpServer() as Server)
       .patch(`/admin/verification/${reqId}/approve`)
       .set('x-extl-id', ADMIN_EXTL)
       .send({ notes: 'ok' })

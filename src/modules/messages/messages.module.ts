@@ -11,7 +11,11 @@ import { MessagesUserController } from './messages.user.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message, User, Trip]), UsersModule, NotificationsModule],
+  imports: [
+    TypeOrmModule.forFeature([Message, User, Trip]),
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [MessagesAdminController, MessagesUserController],
   providers: [MessagesService, ExtlAuthGuard],
   exports: [TypeOrmModule, MessagesService],

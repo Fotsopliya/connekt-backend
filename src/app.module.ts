@@ -24,8 +24,13 @@ import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.test', '.env'] }),
-    ThrottlerModule.forRoot({ throttlers: [{ name: 'default', ttl: 60000, limit: 60 }] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.test', '.env'],
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ name: 'default', ttl: 60000, limit: 60 }],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,

@@ -9,12 +9,14 @@ import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AppDataSource } from '../../../data-source';
 
+import { Request } from 'express';
+
 // Simple idempotency interceptor: requires Idempotency-Key header on POST
 // Stores keys in idempotency_keys table and rejects duplicates within 24h.
 @Injectable()
 export class IdempotencyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const req = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest<Request>();
     if (req.method !== 'POST') {
       return next.handle();
     }

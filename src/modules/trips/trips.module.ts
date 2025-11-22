@@ -10,7 +10,11 @@ import { TripsController } from './trips.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Trip, Vehicle]), UsersModule, NotificationsModule],
+  imports: [
+    TypeOrmModule.forFeature([Trip, Vehicle]),
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [TripsAdminController, TripsController],
   providers: [TripsService, ExtlAuthGuard],
   exports: [TypeOrmModule, TripsService],

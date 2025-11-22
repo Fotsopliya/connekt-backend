@@ -6,7 +6,7 @@ export class HealthController {
   constructor(private readonly dataSource: DataSource) {}
 
   @Get('/health')
-  async health() {
+  health() {
     return { ok: true };
   }
 
@@ -16,7 +16,7 @@ export class HealthController {
       // simple DB ping
       await this.dataSource.query('SELECT 1');
       return { ok: true, db: 'up' };
-    } catch (e) {
+    } catch {
       return { ok: false, db: 'down' };
     }
   }

@@ -9,7 +9,11 @@ import { UsersModule } from '../users/users.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SupportTicket]), UsersModule, NotificationsModule],
+  imports: [
+    TypeOrmModule.forFeature([SupportTicket]),
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [SupportAdminController, SupportUserController],
   providers: [SupportService, ExtlAuthGuard],
   exports: [TypeOrmModule, SupportService],

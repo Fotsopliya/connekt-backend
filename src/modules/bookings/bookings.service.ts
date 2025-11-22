@@ -50,7 +50,8 @@ export class BookingsService {
         .andWhere('passenger.id = :passengerId', { passengerId })
         .andWhere("b.status IN ('pending','accepted')")
         .getOne();
-      if (existing) throw new ForbiddenException('Already booked for this trip');
+      if (existing)
+        throw new ForbiddenException('Already booked for this trip');
 
       // Seats check at request time (informative). Seats are decremented on accept.
       if (trip.seatsLeft < seats)
@@ -128,7 +129,11 @@ export class BookingsService {
       const driver = await mgr
         .getRepository(User)
         .createQueryBuilder('u')
-        .where('u.id = :id', { id: trip.id ? booking.trip.driver.id : booking.trip['driverId'] })
+        .where('u.id = :id', {
+          id: trip.id
+            ? booking.trip.driver?.id
+            : (booking.trip as unknown as { driverId: string }).driverId,
+        })
         .getOne();
       if (driver) {
         this.notifications.emitToUser(driver.extlId, 'booking:status', {

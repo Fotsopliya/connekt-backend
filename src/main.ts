@@ -2,10 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as express from 'express';
+import express from 'express';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import * as functions from 'firebase-functions';
+const server = express();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   // Raw body required for Svix signature verification (Clerk webhooks)
   app.use('/auth/webhooks/clerk', express.raw({ type: '*/*' }));
   app.enableCors({ origin: '*', credentials: false });
@@ -28,4 +31,13 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 5000);
 }
-void bootstrap();
+
+bootstrap()
+  .then(() => console.log('Nest ready'))
+  .catch((err: Error) => {
+    console.error('Nest broken', err);
+    process.exit(1);
+  });
+
+export const api = functions.https.onRequest(server);
+// void bootstrap();
